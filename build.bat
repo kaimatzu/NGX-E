@@ -13,22 +13,32 @@ set lib_file=%target_dir%\NGEX.lib
 set def_file=NGEX.def
 set exp_file=%target_dir%\NGEX.exp
 
+rem Set the preprocessor definitions
+set CPPFLAGS=-I%source_dir%\NGEX -DNGEX_PLATFORM_WINDOWS -DNGEX_BUILD_DLL
+
 rem Create the object files directory if it doesn't exist
 if not exist %object_dir% mkdir %object_dir%
 
 rem Create the target directory if it doesn't exist
 if not exist %target_dir% mkdir %target_dir%
 
-rem Loop through the CPP files in the source directory
-for %%i in ("%source_dir%\*.cpp") do (
-    rem Get the filename and extension of the current CPP file
+rem Loop through the CPP files in the source directory and its subdirectories
+setlocal enabledelayedexpansion
+for /R %source_dir% %%i in (*) do (
+    rem Get the relative path, filename, and extension of the current CPP file
+    set relative_path=%%~pi
     set file=%%~ni
     set ext=%%~xi
 
-    rem Compile the CPP file into an object file in the object files directory
-    g++ -c -std=c++11 -Wall -Wextra -march=native "%%i" -o "%object_dir%\!file!.o"
-)
+    
+    if "!ext!"==".cpp" (
+        rem Compile the CPP file into an object file in the object files directory
+        g++ !CPPFLAGS! -c -std=c++11 -Wall -Wextra -march=native "%%i" -o "%object_dir%\!file!.o"
+    )
 
+
+)
+endlocal
 
 rem Create the DLL from the object files
 g++ -shared "%object_dir%\*.o" -o "%dll_file%"
