@@ -8,13 +8,13 @@ rem Set the paths and filenames
 set source_dir=src
 set object_dir=temp
 set target_dir=bin
-set dll_file=%target_dir%\NGEX.dll
-set lib_file=%target_dir%\NGEX.lib
-set def_file=NGEX.def
-set exp_file=%target_dir%\NGEX.exp
+set dll_file=%target_dir%\NGXE.dll
+set lib_file=%target_dir%\NGXE.lib
+set def_file=NGXE.def
+set exp_file=%target_dir%\NGXE.exp
 
 rem Set the preprocessor definitions
-set CPPFLAGS=-I%source_dir%\NGEX -DNGEX_PLATFORM_WINDOWS -DNGEX_BUILD_DLL
+set CPPFLAGS=-I%source_dir%\NGXE -DNGXE_PLATFORM_WINDOWS -DNGXE_BUILD_DLL
 
 rem Create the object files directory if it doesn't exist
 if not exist %object_dir% mkdir %object_dir%

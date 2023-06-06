@@ -1,6 +1,6 @@
 #include "Application.h"
 
-namespace NGEX {
+namespace NGXE {
     Application::Application(/* args */){
     }
 

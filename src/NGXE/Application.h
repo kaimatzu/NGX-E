@@ -2,8 +2,8 @@
 
 #include "Core.h"
 
-namespace NGEX { 
-    class NGEX_API Application{
+namespace NGXE { 
+    class NGXE_API Application{
     public:
         Application(/* args */);
         virtual ~Application();
