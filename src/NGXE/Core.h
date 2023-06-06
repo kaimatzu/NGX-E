@@ -7,5 +7,5 @@
         #define NGXE_API __declspec(dllimport)
     #endif
 #else
-    // #error Windows support only for now!
+    #error Windows support only for now!
 #endif
