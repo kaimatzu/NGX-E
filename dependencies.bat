@@ -7,14 +7,24 @@ rem !!!IMPORTANT!!!
 rem Set the installation directory
 set install_dir=C:\NGEXutils\
 
+setlocal enabledelayedexpansion
+
+set dependencies="implib.exe" "http://ftp.digitalmars.com/bup.zip" 
+set dependencies=!dependencies! "elevate.exe" "https://www.winability.com/download/Elevate.zip"
+
+endlocal
+
 rem Create the installation directory if it doesn't exist
 if not exist "%install_dir%" mkdir "%install_dir%"
 
 rem Utilities:
-if not exist "%install_dir%\implib.exe" (
-    echo Downloading dependencies...
-    curl -o "%install_dir%\implib.exe" "http://ftp.digitalmars.com/bup.zip"
-)
+for %%i in (%dependencies%){
+    if not exist "%install_dir%\implib.exe" (
+        echo Downloading dependencies...
+        curl -o "%install_dir%\implib.exe" "http://ftp.digitalmars.com/bup.zip"
+    )
+}
+
 
 rem Check if the installation directory is already in the PATH
 echo %PATH% | find /I "%install_dir%" > nul

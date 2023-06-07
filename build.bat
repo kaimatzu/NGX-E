@@ -1,6 +1,7 @@
 @echo off
 
 rem !!!IMPORTANT!!!
+rem Custom build system v1.0.0
 rem Download MinGW-w64 on your system for some utility commands. If you don't, good luck building this piece of shit engine.
 rem !!!IMPORTANT!!!
 
@@ -16,6 +17,11 @@ set dll_file=%target_dir%\NGXE.dll
 set lib_file=%target_dir%\NGXE.lib
 set def_file=NGXE.def
 set exp_file=%target_dir%\NGXE.exp
+
+rem !!!IMPORTANT!!!
+rem ADD THE BIN DIRECTORIES OF THE TARGET APPLICATIONS HERE!
+set target_applications_bin=..\TestApp\bin
+rem !!!IMPORTANT!!!
 
 set vendor_includes=vendor\spdlog\include
 rem Set the preprocessor definitions
@@ -74,6 +80,21 @@ echo Cleaning up temp files and folders...
 del /q "%object_dir%\*.o"
 rd /s /q "%object_dir%"
 del /Q "%target_dir%\%def_file%"
+
+rem Copy DLL and LIB files in NGXE bin to target applications bin
+echo Copying DLL and LIB files to target applications bin...
+
+setlocal enabledelayedexpansion
+
+for %%i in (%target_applications_bin%) do (
+  for %%j in ("%target_dir%\*") do (
+    echo Creating file %%~nj%%~xj in %%i
+    if exist "%%i\%%~nj%%~xj" do del "%%i\%%~nj%%~xj" 2>nul
+    copy %%j %%i
+  )
+)
+
+endlocal
 
 rem -------------------BUILD TIME TRACKER-------------------
 rem Calculate execution time
