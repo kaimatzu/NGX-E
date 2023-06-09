@@ -37,7 +37,7 @@ rem Loop through the CPP files in the source directory and its subdirectories
 setlocal enabledelayedexpansion
 
 rem Create a lock file to synchronize access to the files
-echo. > lock.txt
+@REM echo. > lock.txt
 
 for /R %source_dir% %%i in (*) do (
     rem Get the relative path, filename, and extension of the current CPP file
@@ -45,11 +45,10 @@ for /R %source_dir% %%i in (*) do (
     set file=%%~ni
     set ext=%%~xi
 
-    
+    rem Compile the CPP file into an object file in the object files directory
     if "!ext!"==".cpp" (
-        rem Compile the CPP file into an object file in the object files directory
         echo Compiling: !file!!ext!
-        g++ !CPPFLAGS! -c -std=c++11 -Wall -Wextra -march=native "%%i" -o "%object_dir%\!file!.o"
+        g++ !CPPFLAGS! -c -std=c++11 -Wall -Wextra -march=native -include src/ngxepch.h "%%i" -o "%object_dir%\!file!.o"
     )
 )
 

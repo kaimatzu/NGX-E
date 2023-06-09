@@ -1,3 +1,4 @@
+#include "../ngxepch.h"
 #include "Application.h"
 
 #include "Events/ApplicationEvent.h"
@@ -14,7 +15,7 @@ namespace NGXE {
     {
         WindowResizeEvent e(1280, 720);
         NGXE_TRACE(e);
-        
+        NGXE_INFO("Success");
         while(true){
 
         }

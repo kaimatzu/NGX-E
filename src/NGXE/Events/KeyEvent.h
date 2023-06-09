@@ -2,8 +2,6 @@
 
 #include "Event.h"
 
-#include <sstream>
-
 namespace NGXE {
 
 	class NGXE_API KeyEvent : public Event
