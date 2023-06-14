@@ -11,3 +11,12 @@
 #endif
 
 #define BIT(X) (1 << X)
+
+
+#ifdef NGXE_ENABLE_ASSERTS
+	#define NGXE_ASSERT(x, ...) { if(!(x)) { NGXE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+	#define NGXE_CORE_ASSERT(x, ...) { if(!(x)) { NGXE_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+#else
+	#define NGXE_ASSERT(x, ...)
+	#define NGXE_CORE_ASSERT(x, ...)
+#endif

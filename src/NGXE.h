@@ -1,6 +1,6 @@
 #pragma once
 
-//Include this in applications
+//Include this header file in applications
 
 #include "NGXE/Application.h"
 #include "NGXE/Logger.h"

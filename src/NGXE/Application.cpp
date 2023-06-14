@@ -4,8 +4,11 @@
 #include "Events/ApplicationEvent.h"
 #include "Logger.h"
 
+#include "GLFW/glfw3.h"
+
 namespace NGXE {
     Application::Application(/* args */){
+        m_Window = std::unique_ptr<Window>(Window::Create());
     }
 
     Application::~Application(){
@@ -13,11 +16,10 @@ namespace NGXE {
 
     void Application::Run()
     {
-        WindowResizeEvent e(1280, 720);
-        NGXE_TRACE(e);
-        NGXE_INFO("Success");
-        while(true){
-
+        while (m_Running){
+            glClearColor(1, 0, 1, 1);
+			glClear(GL_COLOR_BUFFER_BIT);
+			m_Window->OnUpdate();
         }
     }
 }
