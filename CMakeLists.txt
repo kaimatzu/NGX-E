@@ -1,14 +1,18 @@
 cmake_minimum_required(VERSION 3.15)
 project(NGXE)
+set(CMAKE_SYSTEM_NAME Windows)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 
 set(output_dir bin)
 set(current_project TestApp)
-set(target_applications_bin ${CMAKE_CURRENT_SOURCE_DIR}/../${current_project}/bin)
-# ---------------------------------------------BUILD GLFW STATIC LIB----------------------------------------------
-set(GLFW_dir vendor/glfw)
+set(target_project_bin ${CMAKE_CURRENT_SOURCE_DIR}/Projects/${current_project}/bin)
+set(target_project_src ${CMAKE_CURRENT_SOURCE_DIR}/Projects/${current_project}/src)
+# ---------------------------------------------BUILD GLFW STATIC LIB--------------------------------------------
+set(GLFW_dir NGXE/vendor/glfw)
 set(GLFW_files
     ${GLFW_dir}/src/context.c
     ${GLFW_dir}/src/init.c
@@ -78,11 +82,11 @@ add_library(GLFW STATIC ${GLFW_files})
 target_include_directories(GLFW PUBLIC ${GLFW_dir}/include ${GLFW_dir}/src)
 set_target_properties(GLFW PROPERTIES OUTPUT_NAME "NGXE")
 set_target_properties(GLFW PROPERTIES PREFIX "")
-set_target_properties(GLFW PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${output_dir})
+set_target_properties(GLFW PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/${output_dir})
 
-# -------------------------------------------------BUILD NGXE DLL-------------------------------------------------
-set(source_dir src)
-set(vendor_includes vendor/spdlog/include vendor/glfw/include)
+# -------------------------------------------------BUILD NGXE DLL-----------------------------------------------
+set(source_dir NGXE/src)
+set(vendor_includes NGXE/vendor/spdlog/include NGXE/vendor/glfw/include)
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}
@@ -107,12 +111,57 @@ set_target_properties(NGXE PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_S
 
 # Link NGXE with GLFW library
 target_link_directories(NGXE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/${output_dir})
-target_link_libraries(NGXE PRIVATE GLFW opengl32)
+target_link_libraries(NGXE PUBLIC GLFW opengl32)
 
-# Copy DLL and LIB files to target applications bin
-message("Copying NGXE.dll")
-add_custom_command(TARGET NGXE POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/bin/NGXE.dll ${target_applications_bin}
+# -----------------------------------------------BUILD Project-------------------------------------------------
+
+
+file(GLOB_RECURSE project_sources ${target_project_src}/*.cpp)
+
+add_executable(output ${project_sources})
+target_include_directories(output PRIVATE ${source_dir}/NGXE ${vendor_includes})
+set_target_properties(output PROPERTIES OUTPUT_NAME "output")
+set_target_properties(output PROPERTIES PREFIX "")
+set_target_properties(output PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${target_project_bin})
+target_link_libraries(output PRIVATE NGXE)
+
+# Copy DLL and LIB files to target project bin
+# Define the command as a custom target
+add_custom_target(RunPostBuildCommand
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/bin/NGXE.dll ${target_project_bin}
+    COMMENT "Copying NGXE.dll to target applications bin directory"
+    VERBATIM
 )
 
-# file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/bin/NGXE.lib DESTINATION ${target_applications_bin})
+# # Define a custom command to run the output executable
+# add_custom_command(
+#     TARGET output POST_BUILD
+#     COMMAND start cmd /c $<TARGET_FILE:output>
+#     COMMENT "Running output executable"
+#     VERBATIM
+# )
+# ^^ THIS SHIT DOESN'T WORK. WHY?????? FUCKING CMAKE BULLSHITERY ^^
+
+# !!!!!! BULLSHIT ALERT !!!!!!
+# I HAVE TO DO THIS BULLSHIT REFERENCING TO A NON EXISTENT FILE TO RUN THE OUTPUT LOL
+if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/__header.h)
+    message(FATAL_ERROR "File \"${CMAKE_CURRENT_BINARY_DIR}/__header.h\" found, \
+    this should never be created, remove!")
+endif()
+
+add_custom_target(
+    my_custom_target_that_always_runs ALL
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/__header.h
+)
+
+add_custom_command(
+    OUTPUT
+        ${CMAKE_CURRENT_BINARY_DIR}/__header.h  # fake! ensure we run!
+        ${CMAKE_CURRENT_BINARY_DIR}/header.h    # real header, we write.
+    # this command must generate: ${CMAKE_CURRENT_BINARY_DIR}/header.h
+    COMMAND start cmd /c $<TARGET_FILE:output>
+)
+# !!!!!! BULLSHIT ALERT !!!!!!
+
+# Make the output target depend on the custom target
+add_dependencies(output RunPostBuildCommand)

@@ -1,9 +1,9 @@
 #include "../ngxepch.h"
 #include "WindowsWindow.h"
 
-#include "NGXE/Events/ApplicationEvent.h"
-#include "NGXE/Events/KeyEvent.h"
-#include "NGXE/Events/MouseEvent.h"
+#include "../NGXE/Events/ApplicationEvent.h"
+#include "../NGXE/Events/KeyEvent.h"
+#include "../NGXE/Events/MouseEvent.h"
 
 namespace NGXE {
 

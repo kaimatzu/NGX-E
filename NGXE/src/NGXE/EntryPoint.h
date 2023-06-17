@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Application.h"
+
 #ifdef NGXE_PLATFORM_WINDOWS
 extern NGXE::Application* NGXE::CreateApplication();
 

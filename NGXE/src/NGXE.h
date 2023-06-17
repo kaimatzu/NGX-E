@@ -3,6 +3,7 @@
 //Include this header file in applications
 
 #include "NGXE/Application.h"
+#include "NGXE/Layer.h"
 #include "NGXE/Logger.h"
 
 //Entry point
